@@ -1,85 +1,70 @@
+
+
 /// <reference types="../@types/jquery"/>
-const aside = $("aside");
-const Hcontent = $("header .content");
-//?=================Events=====================
-$(".openNav").on("click", function () {
-  if (aside.width() == 0) {
-    aside.animate({ width: "250px" }, 500);
-    Hcontent.animate({ left: "250px" }, 500);
-  } else {
-    aside.animate({ width: "0" }, 500);
-    Hcontent.animate({ left: "0" }, 500);
-  }
-});
+const ctx = document.getElementById("myChart");
 
-$("#leftMenu a[href]").on("click", (e) => {
-  let id = $(e.target).attr("href");
-  console.log(id);
 
-  let sectionOffset = $(id).offset().top;
-  console.log(sectionOffset);
+function createChart(data, type="bar") {
 
-  $("html , body").animate({ scrollTop: sectionOffset }, 2000);
-});
+  return new Chart(ctx, {
+    type: type,
+    data: {
+      labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+      datasets: [
+        {
+          label: "Amount Per Day",
+          data: [12, 19, 3, 5, 2, 3],
+          borderWidth: 1,
+          
+          // backgroundColor: null,
+          // backgroundColor: [
+          //   'rgba(255, 99, 132,0.8)',
+          //   'rgba(255, 159, 64,0.8)',
+          //   'rgba(255, 205, 86,0.8)',
+          //   'rgba(75, 192, 192,0.8)',
+          //   'rgba(54, 162, 234,0.8)',
+          //   'rgba(153, 102, 254,0.8)',
+          //   'rgba(201, 203, 207,0.8)'
+          // ],
+          // borderColor: [
+          //   'rgb(255, 99, 132)',
+          //   'rgb(255, 159, 64)',
+          //   'rgb(255, 205, 86)',
+          //   'rgb(75, 192, 192)',
+          //   'rgb(54, 162, 235)',
+          //   'rgb(153, 102, 255)',
+          //   'rgb(201, 203, 207)'
+          // ],
 
-$("#closeBtn").on("click", function () {
-  aside.animate({ width: "0" }, 500);
-  Hcontent.animate({ left: "0" }, 500);
-});
 
-$("#slider h3").on("click", (e) => {
-  $(e.target).siblings("p").not($(e.target).next()).slideUp(500);
-  $(e.target).next().slideToggle(500);
-});
+        },
+      ],
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
+      },
+      responsive: true,
+      maintainAspectRatio: true,
+      legend: {
+        display: false
+      },
+    },
+  });
+}
 
-$(window).on("load", () => {
-  setDate(new Date(2024, 6, 27, 20, 42, 30, 0));
-});
+ let x =createChart();
 
-$("textarea").on("input", (e) => {
-  if ($(e.target).val().length < 100)
-    $("#lengthOfLetters").html(100 - $(e.target).val().length);
-  else $("#lengthOfLetters").html("your available character finished");
-});
-//?=================Functions=====================
 
-const setDate = (futureDate) => {
-  let secondsDifference = Math.floor(
-    (futureDate.getTime() - Date.now()) / 1000
-  );
+function setChartType(chartType){
+  // To change the chart type we have first to destroy the current
+  // chart object. 
+  x.destroy();
 
-  let days = Math.floor(secondsDifference / (24 * 60 * 60));
-  let hours = Math.floor((secondsDifference - days * 24 * 60 * 60) / (60 * 60));
-  let mins = Math.floor(
-    (secondsDifference - days * 24 * 60 * 60 - hours * 60 * 60) / 60
-  );
-  let secs =
-    secondsDifference - days * 24 * 60 * 60 - hours * 60 * 60 - mins * 60;
-  console.log(futureDate, days, hours, mins, secs);
-  $("#counter p").eq(3).html(`${secs} s`);
-  $("#counter p").eq(2).html(`${mins} m`);
-  $("#counter p").eq(1).html(`${hours} h`);
-  $("#counter p").eq(0).html(`${days} D`);
+  // Next we render a new one passing-in, the `Jsondata`
+  // and the `chartType` that the button sends.
+  x=createChart(null, chartType);
+}
 
-  udateDate(days, hours, mins, secs);
-};
-
-const udateDate = (days, hours, mins, secs) => {
-  let x = setInterval(() => {
-    if (secs - 1 >= 0) {
-      $("#counter p").eq(3).html(`${--secs} s`);
-    } else if (mins - 1 >= 0) {
-      $("#counter p").eq(2).html(`${--mins} m`);
-      secs = 60;
-    } else if (hours - 1 >= 0) {
-      $("#counter p").eq(1).html(`${--hours} h`);
-      mins = 60;
-    } else {
-      if (days == 0) clearInterval(x);
-      else {
-        hours = 24;
-        $("#counter p").eq(0).html(`${--days} D`);
-      }
-    }
-  }, 1000);
-};
